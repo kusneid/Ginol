@@ -6,24 +6,42 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Структура данных для пользователя и учетных данных
+
+type User struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type Credentials struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
 func main() {
-	r := gin.Default() // главный инстанс клиента
+	r := gin.Default()
 
-	r.Static("frontend/assets", "./frontend/assets") //css and images
-
-	r.LoadHTMLGlob("frontend/templates/*") // hrml templates
-
-	r.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.html", nil) // запуск страницы с выбором входа или регистрации
+	r.POST("/api/register", func(c *gin.Context) {
+		var user User
+		if err := c.ShouldBindJSON(&user); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "User registered successfully"})
 	})
 
-	r.GET("/login", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "login.html", nil) // вход
+	r.POST("/api/login", func(c *gin.Context) {
+		var credentials Credentials
+		if err := c.ShouldBindJSON(&credentials); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "Login successful"})
 	})
 
-	r.GET("/register", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "register.html", nil) // регистрация
+	r.Static("frontend/", "./frontend/build/static")
+	r.NoRoute(func(c *gin.Context) {
+		c.File("./frontend/build/index.html")
 	})
-
 	r.Run(":8080")
 }
