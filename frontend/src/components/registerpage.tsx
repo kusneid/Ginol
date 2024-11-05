@@ -5,7 +5,7 @@ const RegisterPage: React.FC = () => {
   const [password, setPassword] = useState('');
 
   const handleRegister = async () => {
-    const response = await fetch('http://localhost:8080/api/register', {
+    const response = await fetch('http://localhost:3000/api/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
