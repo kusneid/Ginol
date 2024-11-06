@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './styles.css';
+import '../style.css';
 
 const LoginPage: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -23,7 +23,7 @@ const LoginPage: React.FC = () => {
 
     return (
         <div className="container">
-            <h1>Login Page</h1>
+            <h1>Login</h1>
             <input
                 type="text"
                 placeholder="Username"
