@@ -2,10 +2,10 @@ package main
 
 import (
 	"net/http"
+
 	"github.com/gin-gonic/gin"
 )
 
-// Структура данных для пользователя и учетных данных
 type User struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -19,7 +19,6 @@ type Credentials struct {
 func main() {
 	r := gin.Default()
 
-	// Эндпоинты API
 	r.POST("/api/register", func(c *gin.Context) {
 		var user User
 		if err := c.ShouldBindJSON(&user); err != nil {

@@ -3,24 +3,23 @@
 FRONTEND_DIR="frontend"
 BACKEND_DIR="backend"
 
-read -p "do you want to compile the React application? (y/n): " compile_frontend
+read -p "do you want to compile the React(y/n): " compile_frontend
 
 if [[ "$compile_frontend" == "y" || "$compile_frontend" == "Y" ]]; then
     echo "Compiling the React application..."
     cd "$FRONTEND_DIR"
-    # Установка зависимостей и сборка
     npm install
     npm run build
     cd ..
 fi
 
-echo "Starting the React application..."
+echo "starting React..."
 cd "$FRONTEND_DIR"
 npm start &
 frontend_pid=$!
 cd ..
 
-echo "Starting the Go backend..."
+echo "Starting Gin..."
 cd "$BACKEND_DIR"
 go run main.go &
 backend_pid=$!
