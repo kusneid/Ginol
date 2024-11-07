@@ -23,7 +23,7 @@ const RegisterPage: React.FC = () => {
 
     return (
         <div className="container">
-            <h1>Register</h1>
+            <h1>Registration</h1>
             <input
                 type="text"
                 placeholder="Username"
