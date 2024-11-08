@@ -1,13 +1,14 @@
 package user
 
-// аутенфикация (почему-то гпт настоятельно рекомендует ее отдельно делать)
 import (
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 type User struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	gorm.Model
+	Username string `gorm:"username" json:"username"`
+	Password string `gorm:"password" json:"password"`
 }
 
 type Credentials struct {
@@ -21,10 +22,16 @@ func (u *User) Crypt() error {
 		return err
 	}
 	u.Password = string(hashedPassword)
+
 	return nil
 }
 
-func (u *User) ServerDeliver() error {
-	//с помощью pgx
+func (u *User) RegistrationHandler() error {
+	u.Crypt()
+
+	DatabaseInitialization()
+
+	db.Create(&u)
+
 	return nil
 }

@@ -1,15 +1,21 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 
 	"Ginol/user"
 )
 
 func main() {
 	r := gin.Default()
+
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file")
+	}
 
 	r.POST("/api/register", func(c *gin.Context) {
 		var userAdded user.User
@@ -18,12 +24,13 @@ func main() {
 			return
 		}
 
-		if err := userAdded.Crypt(); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to encrypt password"})
+		log.Println("Registration api call handled")
+
+		if err := userAdded.RegistrationHandler(); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data"})
 			return
 		}
 
-		//fmt.Print(userAdded.Username, userAdded.Password) для теста
 		c.JSON(http.StatusOK, gin.H{"message": "User registered successfully"})
 	})
 
@@ -33,6 +40,7 @@ func main() {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data"})
 			return
 		}
+		log.Println("Login api call handled")
 		c.JSON(http.StatusOK, gin.H{"message": "Login successful"})
 	})
 
