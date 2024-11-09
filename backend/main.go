@@ -6,7 +6,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-
 	"github.com/kusneid/Ginol/user"
 )
 
@@ -50,6 +49,10 @@ func main() {
 
 		c.JSON(http.StatusOK, gin.H{"message": "Login successful"})
 	})
+
+	r.POST("/api/messages", user.CreateMessage)
+
+    r.GET("/api/messages", user.GetMessage)
 
 	r.Run(":8080")
 }
