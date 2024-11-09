@@ -11,11 +11,6 @@ type User struct {
 	Password string `gorm:"password" json:"password"`
 }
 
-type Credentials struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
 func (u *User) Crypt() error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 	if err != nil {

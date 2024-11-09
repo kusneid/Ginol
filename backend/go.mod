@@ -1,4 +1,4 @@
-module Ginol
+module github.com/kusneid/Ginol
 
 go 1.23.2
 

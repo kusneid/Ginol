@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 
-	"Ginol/user"
+	"github.com/kusneid/Ginol/user"
 )
 
 func main() {
@@ -40,7 +40,14 @@ func main() {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data"})
 			return
 		}
+
 		log.Println("Login api call handled")
+
+		if err := credentials.LoginHandler(); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data"})
+			return
+		}
+
 		c.JSON(http.StatusOK, gin.H{"message": "Login successful"})
 	})
 
