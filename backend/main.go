@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 
-	"github.com/kusneid/Ginol/user"
+	"github.com/kusneid/Ginol/backend/user"
 )
 
 func main() {
