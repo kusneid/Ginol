@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -23,7 +22,6 @@ func main() {
 		var userAdded user.Credentials
 		if err := c.ShouldBindJSON(&userAdded); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data"})
-			return
 		}
 
 		log.Println("Registration API call handled")
@@ -58,13 +56,21 @@ func main() {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data"})
 			return
 		}
-		fmt.Println("ERR:", union.FriendNickname)
+		if union.FriendNickname == union.LoggedUser {
+			log.Fatalln("can't connect same accounts sorry bro")
+			return
+
+		}
+		log.Println("check nickname api handled")
+		//fmt.Println("ERR:", union.FriendNickname)
 		value, err := user.SendCheckRequest(union.FriendNickname)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data"})
 		}
 		if value {
 			c.JSON(http.StatusOK, gin.H{"exists": true})
+		} else {
+			c.JSON(http.StatusBadRequest, gin.H{"exists": false})
 		}
 
 	})
