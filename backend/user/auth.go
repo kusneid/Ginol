@@ -15,7 +15,7 @@ func (u *Credentials) Crypt() error {
 	return nil
 }
 
-func (u *Credentials) RegistrationHandler() bool {
+func (u *Credentials) RegistrationHandler() (string, bool) {
 	u.Crypt()
 	return SendRequest(*u, os.Getenv("SERVER_REG_API_URL"))
 }
