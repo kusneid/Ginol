@@ -18,7 +18,7 @@ func main() {
 	}
 
 	r.POST("/api/register", func(c *gin.Context) {
-		var userAdded user.User
+		var userAdded user.Credentials
 		if err := c.ShouldBindJSON(&userAdded); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data"})
 			return
@@ -26,10 +26,7 @@ func main() {
 
 		log.Println("Registration api call handled")
 
-		if err := userAdded.RegistrationHandler(); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data"})
-			return
-		}
+		userAdded.RegistrationHandler()
 
 		c.JSON(http.StatusOK, gin.H{"message": "User registered successfully"})
 	})

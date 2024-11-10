@@ -7,20 +7,17 @@ import (
 	"log"
 	"net/http"
 	"os"
-
-	"gorm.io/gorm"
 )
 
 type Credentials struct {
-	gorm.Model
-	Username string `gorm:"username" json:"username"`
-	Password string `gorm:"password" json:"password"`
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 func (c *Credentials) LoginHandler() bool {
-	return SendLoginRequest(*c, os.Getenv("SERVER_LOGIN_API_URL"))
+	return SendRequest(*c, os.Getenv("SERVER_LOGIN_API_URL"))
 }
-func SendLoginRequest(credentials Credentials, url string) bool {
+func SendRequest(credentials Credentials, url string) bool {
 	jsonData, err := json.Marshal(credentials)
 	if err != nil {
 		log.Fatalln("error marshalling credentials")

@@ -1,32 +1,21 @@
 package user
 
 import (
+	"os"
+
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 )
 
-type User struct {
-	gorm.Model
-	Username string `gorm:"username" json:"username"`
-	Password string `gorm:"password" json:"password"`
-}
-
-func (u *User) Crypt() error {
+func (u *Credentials) Crypt() error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
 	u.Password = string(hashedPassword)
-
 	return nil
 }
 
-func (u *User) RegistrationHandler() error {
+func (u *Credentials) RegistrationHandler() bool {
 	u.Crypt()
-
-	DatabaseInitialization()
-
-	db.Create(&u)
-
-	return nil
+	return SendRequest(*u, os.Getenv("SERVER_REG_API_URL"))
 }
