@@ -1,31 +1,38 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../style.css';
 
-function LoginPage() {
-    const [username, setUsername] = useState('');
+const Login: React.FC = () => {
+    const [nickname, setNickname] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
-    const handleLogin = () => {
+    const handleLogin = async (e: React.FormEvent) => {
+        e.preventDefault();
 
-        const isValidLogin = username === 'correctUsername' && password === 'correctPassword';
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ nickname, password }),
+        });
 
-        if (isValidLogin) {
-            navigate('/connection');
+        const data = await response.json();
+
+        if (data.success) {
+            navigate('/connection', { state: { nickname: data.nickname } });
         } else {
-            alert('Invalid username or password.');
+            alert('Invalid login credentials');
         }
     };
 
     return (
-        <div className="container">
-            <h1>Login</h1>
+        <form onSubmit={handleLogin}>
             <input
                 type="text"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Nickname"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
             />
             <input
                 type="password"
@@ -33,9 +40,9 @@ function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
             />
-            <button onClick={handleLogin}>Login</button>
-        </div>
+            <button type="submit">Login</button>
+        </form>
     );
-}
+};
 
-export default LoginPage;
+export default Login;
