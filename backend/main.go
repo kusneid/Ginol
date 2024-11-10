@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 
+	"github.com/kusneid/Ginol/backend/routes"
 	"github.com/kusneid/Ginol/backend/user"
 )
 
@@ -54,6 +55,14 @@ func main() {
 		})
 
 	})
+
+	r.POST("/api/messages", user.CreateMessage)
+
+	r.GET("/api/messages", user.GetMessage)
+
+	r.GET("/ws", routes.HandleWebSocket)
+
+	go routes.HandleMessages()
 
 	r.Run(":8080")
 }
