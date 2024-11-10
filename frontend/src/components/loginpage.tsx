@@ -1,23 +1,20 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../style.css';
 
-const LoginPage: React.FC = () => {
+function LoginPage() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
-    const handleLogin = async () => {
-        const response = await fetch('http://localhost:3000/api/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ username, password }),
-        });
+    const handleLogin = () => {
 
-        if (response.ok) {
-            alert('Login successful');
+        const isValidLogin = username === 'correctUsername' && password === 'correctPassword';
+
+        if (isValidLogin) {
+            navigate('/connection');
         } else {
-            alert('Login failed');
+            alert('Invalid username or password.');
         }
     };
 
@@ -39,6 +36,6 @@ const LoginPage: React.FC = () => {
             <button onClick={handleLogin}>Login</button>
         </div>
     );
-};
+}
 
 export default LoginPage;
