@@ -10,22 +10,29 @@ const Login: React.FC = () => {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const response = await fetch('/api/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ nickname, password }),
-        });
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ nickname, password }),
+            });
 
-        const data = await response.json();
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
 
-        if (data.success) {
+            const data = await response.json();
 
-            navigate('/connection', { state: { nickname: data.nickname } });
-        } else {
-
-            alert('Login failed');
+            if (data.success) {
+                navigate('/connection', { state: { nickname: data.nickname } });
+            } else {
+                alert('Login failed');
+            }
+        } catch (error) {
+            console.error('Error during login:', error);
+            alert('An error occurred during login. Please try again.');
         }
     };
 
