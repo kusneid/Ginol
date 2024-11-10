@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../style.css';
+import { log } from 'console';
 
 const Login: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -24,7 +25,8 @@ const Login: React.FC = () => {
             }
 
             const data = await response.json();
-
+            
+            
             if (data.bool === "true" || data.bool === true) {
                 localStorage.setItem('token', data.token);
                 navigate('/connection', { state: { nickname: data.username } });

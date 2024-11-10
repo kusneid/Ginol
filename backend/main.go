@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -30,7 +31,7 @@ func main() {
 		regResult, token := userAdded.RegistrationHandler()
 		log.Println("Registration result:", regResult)
 
-		c.JSON(http.StatusOK, gin.H{"bool": true, "nickname": userAdded.Username, "token": token})
+		c.JSON(http.StatusOK, gin.H{"bool": true, "username": userAdded.Username, "token": token})
 	})
 
 	r.POST("/api/login", func(c *gin.Context) {
@@ -47,7 +48,7 @@ func main() {
 			c.JSON(http.StatusConflict, gin.H{"loginStatus": "false"})
 			return
 		}
-		c.JSON(http.StatusOK, gin.H{"bool": true, "nickname": credentials.Username, "token": token})
+		c.JSON(http.StatusOK, gin.H{"bool": true, "username": credentials.Username, "token": token})
 	})
 
 	r.POST("/api/check-nickname", func(c *gin.Context) {
@@ -56,6 +57,14 @@ func main() {
 		if err := c.ShouldBindJSON(&union); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data"})
 			return
+		}
+		fmt.Println("ERR:", union.FriendNickname)
+		value, err := user.SendCheckRequest(union.FriendNickname)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data"})
+		}
+		if value {
+			c.JSON(http.StatusOK, gin.H{"exists": true})
 		}
 
 	})
