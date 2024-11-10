@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../style.css';
 
 const Login: React.FC = () => {
-    const [nickname, setNickname] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
@@ -16,7 +16,7 @@ const Login: React.FC = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ nickname, password }),
+                body: JSON.stringify({ username, password }),
             });
 
             if (!response.ok) {
@@ -25,7 +25,7 @@ const Login: React.FC = () => {
 
             const data = await response.json();
 
-            if (data.success) {
+            if (data.loginStatus === "true") {
                 navigate('/connection', { state: { nickname: data.nickname } });
             } else {
                 alert('Login failed');
@@ -42,9 +42,9 @@ const Login: React.FC = () => {
             <form onSubmit={handleLogin}>
                 <input
                     type="text"
-                    placeholder="Nickname"
-                    value={nickname}
-                    onChange={(e) => setNickname(e.target.value)}
+                    placeholder="Username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                     className="form-input"
                 />
                 <input

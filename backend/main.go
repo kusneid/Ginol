@@ -25,7 +25,7 @@ func main() {
 			return
 		}
 
-		log.Println("Registration api call handled")
+		log.Println("Registration API call handled")
 
 		userAdded.RegistrationHandler()
 
@@ -39,21 +39,21 @@ func main() {
 			return
 		}
 
-		log.Println("Login api call handled")
+		log.Println("Login API call handled")
 
 		authResult := credentials.LoginHandler()
-		log.Println("auth result:", authResult)
+		log.Println("Auth result:", authResult)
 		if !authResult {
-			c.JSON(http.StatusConflict, gin.H{"loginStatus": "false"})
-		}
-		c.JSON(http.StatusOK, gin.H{"loginStatus": "true", "nickname": credentials.Username})
 
+			c.JSON(http.StatusConflict, gin.H{"loginStatus": "false"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"loginStatus": "true", "nickname": credentials.Username})
 	})
 
 	r.POST("/api/messages", user.CreateMessage)
-
 	r.GET("/api/messages", user.GetMessage)
-
 	r.GET("/ws", routes.HandleWebSocket)
 
 	go routes.HandleMessages()
