@@ -6,7 +6,7 @@ function ConnectionPage() {
     const [nickname, setNickname] = useState('');
     const navigate = useNavigate();
     const location = useLocation();
-    const { nickname: loggedUserNickname } = location.state as { nickname: string };
+    const { nickname: loggedUserNickname } = (location.state as { nickname: string }) || {};
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setNickname(e.target.value);

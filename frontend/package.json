@@ -15,15 +15,15 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.27.0",
-    "react-scripts": "^3.0.1",
+    "react-scripts": "^5.0.1",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts --openssl-legacy-provider start",
-    "build": "react-scripts --openssl-legacy-provider build",
-    "test": "react-scripts --openssl-legacy-provider test",
-    "eject": "react-scripts --openssl-legacy-provider eject"
+    "start": "node_modules/.bin/react-scripts --openssl-legacy-provider start",
+    "build": "node_modules/.bin/react-scripts --openssl-legacy-provider build",
+    "test": "node_modules/.bin/react-scripts --openssl-legacy-provider test",
+    "eject": "node_modules/.bin/react-scripts --openssl-legacy-provider eject"
   },
   "eslintConfig": {
     "extends": [

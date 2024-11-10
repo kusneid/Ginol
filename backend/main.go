@@ -43,16 +43,10 @@ func main() {
 
 		authResult := credentials.LoginHandler()
 		log.Println("auth result:", authResult)
-
-		if authResult {
-			c.Redirect(http.StatusMovedPermanently, "/connection")
-		} else {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authentication failed"})
+		if !authResult {
+			c.JSON(http.StatusConflict, gin.H{"loginStatus": "false"})
 		}
-
-		r.GET("/connection", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{"message": "You are connected!"})
-		})
+		c.JSON(http.StatusOK, gin.H{"loginStatus": "true", "nickname": credentials.Username})
 
 	})
 

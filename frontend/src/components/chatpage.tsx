@@ -21,7 +21,7 @@ const ChatPage: React.FC = () => {
 
     const fetchMessages = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/messages');
+            const res = await fetch('http://localhost:8080/api/messages');
             const data = await res.json();
             setMessages(data);
         } catch (err) {

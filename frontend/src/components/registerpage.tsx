@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../style.css';
 
 const RegisterPage: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
     const handleRegister = async () => {
         const response = await fetch('http://localhost:3000/api/register', {
@@ -16,6 +18,7 @@ const RegisterPage: React.FC = () => {
 
         if (response.ok) {
             alert('Registration successful');
+            navigate('/connection');
         } else {
             alert('Registration failed');
         }
