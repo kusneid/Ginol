@@ -27,9 +27,10 @@ func main() {
 
 		log.Println("Registration API call handled")
 
-		userAdded.RegistrationHandler()
+		regResult, token := userAdded.RegistrationHandler()
+		log.Println("Registration result:", regResult)
 
-		c.JSON(http.StatusOK, gin.H{"message": "User registered successfully"})
+		c.JSON(http.StatusOK, gin.H{"bool": true, "nickname": userAdded.Username, "token": token})
 	})
 
 	r.POST("/api/login", func(c *gin.Context) {
@@ -41,7 +42,7 @@ func main() {
 
 		log.Println("Login API call handled")
 
-		authResult := credentials.LoginHandler()
+		authResult, token := credentials.LoginHandler()
 		log.Println("Auth result:", authResult)
 		if !authResult {
 
@@ -49,7 +50,7 @@ func main() {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"loginStatus": "true", "nickname": credentials.Username})
+		c.JSON(http.StatusOK, gin.H{"bool": true, "nickname": credentials.Username, "token": token})
 	})
 
 	r.POST("/api/messages", user.CreateMessage)
