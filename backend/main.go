@@ -39,9 +39,7 @@ func main() {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data"})
 			return
 		}
-
 		log.Println("Login API call handled")
-
 		authResult, token := credentials.LoginHandler()
 		log.Println("Auth result:", authResult)
 		if !authResult {
@@ -49,8 +47,17 @@ func main() {
 			c.JSON(http.StatusConflict, gin.H{"loginStatus": "false"})
 			return
 		}
-
 		c.JSON(http.StatusOK, gin.H{"bool": true, "nickname": credentials.Username, "token": token})
+	})
+
+	r.POST("/api/check-nickname", func(c *gin.Context) {
+
+		var union user.Answer
+		if err := c.ShouldBindJSON(&union); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data"})
+			return
+		}
+
 	})
 
 	r.POST("/api/messages", user.CreateMessage)
