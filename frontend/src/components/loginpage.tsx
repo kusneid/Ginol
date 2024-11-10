@@ -25,8 +25,9 @@ const Login: React.FC = () => {
 
             const data = await response.json();
 
-            if (data.loginStatus === "true") {
-                navigate('/connection', { state: { nickname: data.nickname } });
+            if (data.bool === "true" || data.bool === true) {
+                localStorage.setItem('token', data.token);
+                navigate('/connection', { state: { nickname: data.username } });
             } else {
                 alert('Login failed');
             }

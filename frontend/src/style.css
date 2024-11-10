@@ -172,6 +172,8 @@ input[type="password"]:focus {
 }
 
 .chat-box {
+    width: 100%;
+    max-width: 400px;
     height: 400px;
     overflow-y: auto;
     background-color: #1f1f2e;
@@ -181,6 +183,7 @@ input[type="password"]:focus {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    align-items: center; /* Center messages vertically in box */
 }
 
 .message {
@@ -191,6 +194,16 @@ input[type="password"]:focus {
     border-radius: 8px;
     width: fit-content;
     max-width: 80%;
+}
+
+.message.sent {
+    align-self: flex-end;
+    background-color: #ff6b6b;
+}
+
+.message.received {
+    align-self: flex-start;
+    background-color: #2c2c3e;
 }
 
 .message strong {
@@ -208,6 +221,8 @@ input[type="password"]:focus {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    width: 100%;
+    max-width: 400px;
 }
 
 .input-container input[type="text"] {
@@ -227,12 +242,12 @@ input[type="password"]:focus {
     border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
+    transition: background-color 0.3s, transform 0.3s;
 }
 
 .input-container button:hover {
     background-color: #ff5b5b;
 }
-
 
 .header {
     display: flex;
@@ -275,14 +290,4 @@ input[type="password"]:focus {
 
 .dropdown-menu button:hover {
     background-color: #3d3d4e;
-}
-
-.message.sent {
-    align-self: flex-end;
-    background-color: #ff6b6b;
-}
-
-.message.received {
-    align-self: flex-start;
-    background-color: #2c2c3e;
 }

@@ -12,9 +12,44 @@ function ConnectionPage() {
         setNickname(e.target.value);
     };
 
-    const handleEnterChat = () => {
+    const handleEnterChat = async () => {
         if (nickname.trim()) {
-            navigate(`/chat/${nickname}`, { state: { loggedUserNickname } });
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    alert("User is not authenticated");
+                    navigate('/login');
+                    return;
+                }
+
+                const response = await fetch('/api/check-nickname', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                        loggedUser: loggedUserNickname,
+                        friendNickname: nickname
+                    })
+                });
+
+                if (!response.ok) {
+                    console.error(`Error: Received status ${response.status}`);
+                    alert("An error occurred. Please try again.");
+                    return;
+                }
+
+                const data = await response.json();
+                if (data.exists) {
+                    navigate(`/chat/${nickname}`, { state: { username: loggedUserNickname, friend: nickname } });
+                } else {
+                    alert("Nickname not found in the database.");
+                }
+            } catch (error) {
+                console.error("Error checking nickname:", error);
+                alert("An error occurred. Please try again.");
+            }
         } else {
             alert('Please enter a nickname.');
         }

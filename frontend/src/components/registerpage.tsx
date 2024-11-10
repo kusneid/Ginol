@@ -17,7 +17,9 @@ const RegisterPage: React.FC = () => {
         });
 
         if (response.ok) {
-            navigate('/connection');
+            const data = await response.json();
+            localStorage.setItem('token', data.token);
+            navigate('/connection', { state: { nickname: username } });
         } else {
             alert('Registration failed');
         }
