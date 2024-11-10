@@ -3,22 +3,23 @@ package routes
 //реализация websocket подключения, создание маршрута, всякие проверки подключения итд
 
 import (
-    "net/http"
-    "github.com/gorilla/websocket"
-    "github.com/gin-gonic/gin"
+	"net/http"
 
-    "github.com/kusneid/Ginol/user"
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
+
+	"github.com/kusneid/Ginol/backend/user"
 )
 
-var clients = make(map[*websocket.Conn]bool) 
-var broadcast = make(chan user.Message) 
+var clients = make(map[*websocket.Conn]bool)
+var broadcast = make(chan user.Message)
 
 var upgrader = websocket.Upgrader{
-    ReadBufferSize:  1024,
-    WriteBufferSize: 1024,
-    CheckOrigin: func(r *http.Request) bool {
-        return true
-    },
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
 }
 
 func HandleWebSocket(c *gin.Context) {
@@ -28,7 +29,7 @@ func HandleWebSocket(c *gin.Context) {
 	}
 	defer ws.Close()
 	clients[ws] = true
-    var msg user.Message
+	var msg user.Message
 	for {
 		err := ws.ReadJSON(&msg)
 		if err != nil {
