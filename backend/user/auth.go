@@ -1,6 +1,7 @@
 package user
 
 import (
+	"errors"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -28,5 +29,18 @@ func (u *User) RegistrationHandler() error {
 
 	db.Create(&u)
 
+	return nil
+}
+
+var UsersSlice []User
+
+func AddUser(user User) error {
+	for _, u := range UsersSlice {
+		if u.Username == user.Username {
+			return errors.New("user with this nickname already exists")
+		}
+	}
+
+	UsersSlice = append(UsersSlice, user)
 	return nil
 }

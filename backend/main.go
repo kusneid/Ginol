@@ -33,6 +33,8 @@ func main() {
 		}
 
 		c.JSON(http.StatusOK, gin.H{"message": "User registered successfully"})
+
+		user.AddUser(userAdded)
 	})
 
 	r.POST("/api/login", func(c *gin.Context) {
@@ -55,6 +57,8 @@ func main() {
 	r.POST("/api/messages", user.CreateMessage)
 
     r.GET("/api/messages", user.GetMessage)
+
+	r.GET("/api/connect", routes.ConnectUser)
 
 	r.GET("/ws", routes.HandleWebSocket)
 

@@ -3,6 +3,7 @@ package routes
 //реализация websocket подключения, создание маршрута, всякие проверки подключения итд
 
 import (
+	"fmt"
     "net/http"
     "github.com/gorilla/websocket"
     "github.com/gin-gonic/gin"
@@ -51,3 +52,32 @@ func HandleMessages() {
 		}
 	}
 }
+
+func ConnectUser(c *gin.Context) {
+	username := c.DefaultQuery("username", "")
+	var currentUser user.User
+
+	for _, user_buf := range user.UsersSlice {
+		if user_buf.Username == username {
+			currentUser = user_buf
+		}
+	}
+
+	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	defer conn.Close()
+
+	if user.Connect.User1 == nil {
+		user.Connect.User1 = &currentUser
+	} else if user.Connect.User2 == nil {
+		user.Connect.User2 = &currentUser
+	}
+
+	go HandleMessages()
+
+	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("User %s connected", username)})
+}
+

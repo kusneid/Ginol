@@ -16,7 +16,14 @@ type Message struct {
     SenderID  int    `json:"senderID"`
 }
 
-var messages []Message
+type Connection struct {
+    User1 *User `json:"user1`
+    User2 *User `json:"user2`
+    Messages []Message `json:"messages"`
+
+}
+
+var Connect Connection
 
 func CreateMessage(c *gin.Context) {
 	var newMessage Message
@@ -28,12 +35,12 @@ func CreateMessage(c *gin.Context) {
 
     newMessage.Time = time.Now()
 
-    messages = append(messages, newMessage)
+    Connect.Messages = append(Connect.Messages, newMessage)
 
     c.JSON(http.StatusCreated, newMessage)
 
 }
 
 func GetMessage(c *gin.Context) {
-	c.JSON(http.StatusOK, messages)
+	c.JSON(http.StatusOK, Connect.Messages)
 }
