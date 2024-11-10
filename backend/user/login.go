@@ -47,7 +47,6 @@ func SendRequest(credentials Credentials, url string) bool {
 		return false
 	}
 
-	// Логируем ответ от внешнего API
 	log.Printf("Response from external API: %s", body)
 
 	var result map[string]interface{}
@@ -56,7 +55,6 @@ func SendRequest(credentials Credentials, url string) bool {
 		return false
 	}
 
-	// Проверяем значение ключа "bool" в ответе
 	if val, ok := result["bool"]; ok {
 		if valStr, isString := val.(string); isString && valStr == "true" {
 			return true

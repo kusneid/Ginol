@@ -17,7 +17,6 @@ const RegisterPage: React.FC = () => {
         });
 
         if (response.ok) {
-            alert('Registration successful');
             navigate('/connection');
         } else {
             alert('Registration failed');
