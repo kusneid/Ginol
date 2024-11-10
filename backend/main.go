@@ -43,12 +43,19 @@ func main() {
 
 		log.Println("Login api call handled")
 
-		if err := credentials.LoginHandler(); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data"})
-			return
+		authResult := credentials.LoginHandler()
+		log.Println("auth result:", authResult)
+
+		if authResult {
+			c.Redirect(http.StatusMovedPermanently, "/connection")
+		} else {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authentication failed"})
 		}
 
-		c.JSON(http.StatusOK, gin.H{"message": "Login successful"})
+		r.GET("/connection", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{"message": "You are connected!"})
+		})
+
 	})
 
 	r.Run(":8080")
