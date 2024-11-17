@@ -3,31 +3,16 @@ package routes
 //реализация websocket подключения, создание маршрута, всякие проверки подключения итд
 
 import (
-<<<<<<< Updated upstream
 	"fmt"
     "net/http"
-    "github.com/gorilla/websocket"
-    "github.com/gin-gonic/gin"
-=======
 	"log"
 	"time"
-	"net/http"
->>>>>>> Stashed changes
-
+    "github.com/gorilla/websocket"
+    "github.com/gin-gonic/gin"
+	
     "github.com/kusneid/Ginol/user"
 )
 
-<<<<<<< Updated upstream
-var clients = make(map[*websocket.Conn]bool) 
-var broadcast = make(chan user.Message) 
-
-var upgrader = websocket.Upgrader{
-    ReadBufferSize:  1024,
-    WriteBufferSize: 1024,
-    CheckOrigin: func(r *http.Request) bool {
-        return true
-    },
-=======
 var clients = make(map[*websocket.Conn]string) // активные ws подключения
 var broadcast = make(chan user.Message) // канал для передачи сообщений
 
@@ -37,7 +22,6 @@ var upgrader = websocket.Upgrader{ // обновление с http до ws
 	CheckOrigin: func(r *http.Request) bool {
 		return true
 	},
->>>>>>> Stashed changes
 }
 
 func HandleWebSocket(c *gin.Context) { // обработка нового ws подключения
@@ -47,15 +31,10 @@ func HandleWebSocket(c *gin.Context) { // обработка нового ws п�
 		return
 	}
 	defer ws.Close()
-<<<<<<< Updated upstream
-	clients[ws] = true
-    var msg user.Message
-=======
 	log.Printf("New connection established")	
 
 	var msg user.Message // обработка входящего сообщения
 	
->>>>>>> Stashed changes
 	for {
 		err := ws.ReadJSON(&msg)
 		clients[ws] = msg.Nickname
