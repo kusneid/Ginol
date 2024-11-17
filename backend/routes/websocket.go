@@ -3,7 +3,7 @@ package routes
 //реализация websocket подключения, создание маршрута, всякие проверки подключения итд
 
 import (
-	"fmt"
+	//"fmt"
     "net/http"
 	"log"
 	"time"
@@ -67,7 +67,7 @@ func HandleMessages() { // рассылка сообщений
 	}
 }
 
-func ConnectUser(c *gin.Context) {
+/*func ConnectUser(c *gin.Context) {
 	username := c.DefaultQuery("username", "")
 	var currentUser user.User
 
@@ -93,5 +93,5 @@ func ConnectUser(c *gin.Context) {
 	go HandleMessages()
 
 	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("User %s connected", username)})
-}
+}*/
 

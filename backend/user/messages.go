@@ -16,7 +16,28 @@ type Message struct {
     SenderID  int    `json:"senderID"`
 }
 
-type Connection struct {
+var messages []Message
+
+func CreateMessage(c *gin.Context) {
+	var newMessage Message
+
+    if err := c.ShouldBindJSON(&newMessage); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"json file parsing error": err.Error()})
+        return
+    }
+
+    newMessage.Time = time.Now()
+
+    messages = append(messages, newMessage)
+
+    c.JSON(http.StatusCreated, newMessage)
+
+}
+
+func GetMessage(c *gin.Context) {
+	c.JSON(http.StatusOK, messages)
+}
+/*type Connection struct {
     User1 *User `json:"user1`
     User2 *User `json:"user2`
     Messages []Message `json:"messages"`
@@ -43,4 +64,4 @@ func CreateMessage(c *gin.Context) {
 
 func GetMessage(c *gin.Context) {
 	c.JSON(http.StatusOK, Connect.Messages)
-}
+}*/

@@ -58,7 +58,7 @@ func main() {
 
     r.GET("/api/messages", user.GetMessage)
 
-	r.GET("/api/connect", routes.ConnectUser)
+	// r.GET("/api/connect", routes.ConnectUser)
 
 	r.GET("/ws", routes.HandleWebSocket)
 
