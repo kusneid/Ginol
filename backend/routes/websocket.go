@@ -3,14 +3,21 @@ package routes
 //реализация websocket подключения, создание маршрута, всякие проверки подключения итд
 
 import (
+<<<<<<< Updated upstream
 	"fmt"
     "net/http"
     "github.com/gorilla/websocket"
     "github.com/gin-gonic/gin"
+=======
+	"log"
+	"time"
+	"net/http"
+>>>>>>> Stashed changes
 
     "github.com/kusneid/Ginol/user"
 )
 
+<<<<<<< Updated upstream
 var clients = make(map[*websocket.Conn]bool) 
 var broadcast = make(chan user.Message) 
 
@@ -20,32 +27,60 @@ var upgrader = websocket.Upgrader{
     CheckOrigin: func(r *http.Request) bool {
         return true
     },
+=======
+var clients = make(map[*websocket.Conn]string) // активные ws подключения
+var broadcast = make(chan user.Message) // канал для передачи сообщений
+
+var upgrader = websocket.Upgrader{ // обновление с http до ws
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+>>>>>>> Stashed changes
 }
 
-func HandleWebSocket(c *gin.Context) {
+func HandleWebSocket(c *gin.Context) { // обработка нового ws подключения
 	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
+		log.Println("Error upgrading WebSocket connection:", err)
 		return
 	}
 	defer ws.Close()
+<<<<<<< Updated upstream
 	clients[ws] = true
     var msg user.Message
+=======
+	log.Printf("New connection established")	
+
+	var msg user.Message // обработка входящего сообщения
+	
+>>>>>>> Stashed changes
 	for {
 		err := ws.ReadJSON(&msg)
+		clients[ws] = msg.Nickname
 		if err != nil {
+			log.Printf("Error reading message from client %s: %v", msg.Nickname, err)
 			delete(clients, ws)
 			break
 		}
+		msg.Time = time.Now()
 		broadcast <- msg
+		log.Printf("Received message from %s: %s", msg.Nickname, msg.Text)
 	}
 }
 
-func HandleMessages() {
+func HandleMessages() { // рассылка сообщений
 	for {
-		msg := <-broadcast
+		msg := <- broadcast
 		for client := range clients {
+			// if msg.Nickname == clients[client] {
+        	// 	continue // Пропустить отправителя
+    		// }
+			log.Printf("Sending message to %s: %s", clients[client], msg.Text)
 			err := client.WriteJSON(msg)
 			if err != nil {
+				log.Printf("Error sending message to %s: %v", clients[client], err)
 				client.Close()
 				delete(clients, client)
 			}
