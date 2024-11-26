@@ -43,8 +43,10 @@ func main() {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data"})
 			return
 		}
-
 		log.Println("Login api call handled")
+			c.JSON(http.StatusConflict, gin.H{"loginStatus": "false"})
+			return
+		
 
 		if err := credentials.LoginHandler(); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data"})
@@ -54,15 +56,25 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"message": "Login successful"})
 	})
 
-	r.POST("/api/messages", user.CreateMessage)
+	var chatInst routes.ChatInstance
+	r.POST("/api/chat-reg", func(c *gin.Context) {
+    if err := c.ShouldBindJSON(&chatInst); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data"})
+        return
+    }
 
-    r.GET("/api/messages", user.GetMessage)
+    log.Printf("Chat registration: Username=%s, Friend=%s", chatInst.Username, chatInst.FriendUsername)
 
-	// r.GET("/api/connect", routes.ConnectUser)
+    c.JSON(http.StatusOK, gin.H{"message": "Chat registration successful"})
+	})
+	
+	r.GET("/ws/chat", func(c *gin.Context){
+		routes.HandleWebSocket(c, chatInst)
+	})
+	// r.POST("/api/messages", user.CreateMessage)
+	// r.GET("/api/messages", user.GetMessage)
 
-	r.GET("/ws", routes.HandleWebSocket)
-
-	go routes.HandleMessages()
+	// go routes.HandleMessages()
 
 	r.Run(":8080")
 }

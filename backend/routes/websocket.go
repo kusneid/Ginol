@@ -3,17 +3,22 @@ package routes
 //реализация websocket подключения, создание маршрута, всякие проверки подключения итд
 
 import (
-	//"fmt"
     "net/http"
 	"log"
 	"time"
     "github.com/gorilla/websocket"
     "github.com/gin-gonic/gin"
-	
+
     "github.com/kusneid/Ginol/user"
+
 )
 
-var clients = make(map[*websocket.Conn]string) // активные ws подключения
+type ChatInstance struct{
+  Username	string `json:"username"`      /*binding:"required"*/
+  FriendUsername	string` json:"friend"`
+}
+
+var clients = make(map[string]*websocket.Conn) // активные ws подключения
 var broadcast = make(chan user.Message) // канал для передачи сообщений
 
 var upgrader = websocket.Upgrader{ // обновление с http до ws
@@ -24,38 +29,61 @@ var upgrader = websocket.Upgrader{ // обновление с http до ws
 	},
 }
 
-func HandleWebSocket(c *gin.Context) { // обработка нового ws подключения
-	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-	if err != nil {
-		log.Println("Error upgrading WebSocket connection:", err)
-		return
-	}
-	defer ws.Close()
-	log.Printf("New connection established")	
+func HandleWebSocket(c *gin.Context, chatInst ChatInstance) {        // Установка WebSocket соединения
+   username := c.Query("username")
+    friend := c.Query("friend")
+    
+    if username == "" || friend == "" {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Missing username or friend"})
+        return
+    }
 
-	var msg user.Message // обработка входящего сообщения
-	
-	for {
-		err := ws.ReadJSON(&msg)
-		clients[ws] = msg.Nickname
-		if err != nil {
-			log.Printf("Error reading message from client %s: %v", msg.Nickname, err)
-			delete(clients, ws)
-			break
-		}
-		msg.Time = time.Now()
-		broadcast <- msg
-		log.Printf("Received message from %s: %s", msg.Nickname, msg.Text)
-	}
+    ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+    if err != nil {
+        log.Println("Error upgrading to WebSocket:", err)
+        return
+    }
+    defer ws.Close()
+
+    clients[username] = ws // Сохраняем соединение
+    log.Printf("WebSocket connection established for user: %s", username)
+
+    for {
+        var msg user.Message
+        err := ws.ReadJSON(&msg)
+        if err != nil {
+            log.Printf("Error reading message from %s: %v", username, err)
+            delete(clients, username)
+            break
+        }
+
+        // Добавляем отправителя и время к сообщению
+        msg.Nickname = username
+        msg.Time = time.Now()
+
+        // Отправляем сообщение другу
+        if friendConn, ok := clients[friend]; ok {
+            err = friendConn.WriteJSON(msg)
+            if err != nil {
+                log.Printf("Error sending message to %s: %v", friend, err)
+                delete(clients, friend)
+            }
+        } else {
+            log.Printf("Friend %s is not connected", friend)
+        }
+    }
 }
 
-func HandleMessages() { // рассылка сообщений
+
+
+/*func HandleMessages() { // рассылка сообщений
 	for {
 		msg := <- broadcast
 		for client := range clients {
-			// if msg.Nickname == clients[client] {
-        	// 	continue // Пропустить отправителя
-    		// }
+			if msg.Nickname == clients[client] {
+        		continue // Пропустить отправителя
+    		}
+>>>>>>> Stashed changes
 			log.Printf("Sending message to %s: %s", clients[client], msg.Text)
 			err := client.WriteJSON(msg)
 			if err != nil {
@@ -65,6 +93,7 @@ func HandleMessages() { // рассылка сообщений
 			}
 		}
 	}
+<<<<<<< Updated upstream
 }
 
 /*func ConnectUser(c *gin.Context) {
@@ -94,4 +123,3 @@ func HandleMessages() { // рассылка сообщений
 
 	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("User %s connected", username)})
 }*/
-
