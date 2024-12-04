@@ -3,6 +3,8 @@ package routes
 //реализация websocket подключения, создание маршрута, всякие проверки подключения итд
 
 import (
+	"log"
+	"time"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -11,8 +13,15 @@ import (
 	"github.com/kusneid/Ginol/backend/user"
 )
 
-var clients = make(map[*websocket.Conn]bool)
-var broadcast = make(chan user.Message)
+// var clients = make(map[*websocket.Conn]bool)
+// var broadcast = make(chan user.Message)
+
+type ChatInstance struct{
+  Username	string `json:"username"`   
+  FriendUsername	string` json:"friend"`
+}
+
+var clients = make(map[string]*websocket.Conn) // активные ws подключения
 
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
@@ -22,33 +31,46 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-func HandleWebSocket(c *gin.Context) {
+func HandleWebSocket(c *gin.Context, chatInst ChatInstance) {        // Установка WebSocket соединения
+   username := c.Query("username")
+    friend := c.Query("friend")
+    
+    if username == "" || friend == "" {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Missing username or friend"})
+        return
+    }
 	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-	if err != nil {
-		return
-	}
-	defer ws.Close()
-	clients[ws] = true
-	var msg user.Message
-	for {
-		err := ws.ReadJSON(&msg)
-		if err != nil {
-			delete(clients, ws)
-			break
-		}
-		broadcast <- msg
-	}
-}
+    if err != nil {
+        log.Println("Error upgrading to WebSocket:", err)
+        return
+    }
+    defer ws.Close()
 
-func HandleMessages() {
-	for {
-		msg := <-broadcast
-		for client := range clients {
-			err := client.WriteJSON(msg)
-			if err != nil {
-				client.Close()
-				delete(clients, client)
-			}
-		}
-	}
+    clients[username] = ws // Сохраняем соединение
+    log.Printf("WebSocket connection established for user: %s", username)
+
+    for {
+        var msg user.Message
+        err := ws.ReadJSON(&msg)
+        if err != nil {
+            log.Printf("Error reading message from %s: %v", username, err)
+            delete(clients, username)
+            break
+        }
+
+        // Добавляем отправителя и время к сообщению
+        msg.Nickname = username
+        msg.Time = time.Now()
+
+        // Отправляем сообщение другу
+        if friendConn, ok := clients[friend]; ok {
+            err = friendConn.WriteJSON(msg)
+            if err != nil {
+                log.Printf("Error sending message to %s: %v", friend, err)
+                delete(clients, friend)
+            }
+        } else {
+            log.Printf("Friend %s is not connected", friend)
+        }
+    }
 }

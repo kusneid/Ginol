@@ -75,11 +75,25 @@ func main() {
 
 	})
 
-	r.POST("/api/messages", user.CreateMessage)
-	r.GET("/api/messages", user.GetMessage)
-	r.GET("/ws", routes.HandleWebSocket)
+	var chatInst routes.ChatInstance
+	r.POST("/api/chat-reg", func(c *gin.Context) {
+    if err := c.ShouldBindJSON(&chatInst); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data"})
+        return
+    }
+	log.Printf("Chat registration: Username=%s, Friend=%s", chatInst.Username, chatInst.FriendUsername)
+	    c.JSON(http.StatusOK, gin.H{"message": "Chat registration successful"})
+	})
 
-	go routes.HandleMessages()
+	r.GET("/ws/chat", func(c *gin.Context){
+		routes.HandleWebSocket(c, chatInst)
+	})
+
+	// r.POST("/api/messages", user.CreateMessage)
+	// r.GET("/api/messages", user.GetMessage)
+	// r.GET("/ws", routes.HandleWebSocket)
+
+	// go routes.HandleMessages()
 
 	r.Run(":8080")
 }
