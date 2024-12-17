@@ -9,9 +9,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-
-	"github.com/kusneid/Ginol/backend/user"
 )
+
+type Message struct {
+    Sender  string `json:"sender"`
+    Text      string `json:"text"`
+    Time      time.Time `json:"time"`
+    Target  string    `json:"target"`
+}
 
 // var clients = make(map[*websocket.Conn]bool)
 // var broadcast = make(chan user.Message)
@@ -23,7 +28,7 @@ type ChatInstance struct{
 
 var clients = make(map[string]*websocket.Conn) // активные ws подключения
 
-var upgrader = websocket.Upgrader{
+var upgrader = websocket.Upgrader{ // 
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 	CheckOrigin: func(r *http.Request) bool {
@@ -31,8 +36,10 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-func HandleWebSocket(c *gin.Context, chatInst ChatInstance) {        // Установка WebSocket соединения
-   username := c.Query("username")
+func HandleWebSocket(c *gin.Context, chatInst ChatInstance) {        // установка WebSocket соединения
+	// username := chatInst.Username
+	// friend := chatInst.FriendUsername
+    username := c.Query("username")
     friend := c.Query("friend")
     
     if username == "" || friend == "" {
@@ -46,11 +53,11 @@ func HandleWebSocket(c *gin.Context, chatInst ChatInstance) {        // Уста
     }
     defer ws.Close()
 
-    clients[username] = ws // Сохраняем соединение
+    clients[username] = ws // сохраняем соединение
     log.Printf("WebSocket connection established for user: %s", username)
 
     for {
-        var msg user.Message
+        var msg Message
         err := ws.ReadJSON(&msg)
         if err != nil {
             log.Printf("Error reading message from %s: %v", username, err)
@@ -58,11 +65,10 @@ func HandleWebSocket(c *gin.Context, chatInst ChatInstance) {        // Уста
             break
         }
 
-        // Добавляем отправителя и время к сообщению
-        msg.Nickname = username
+        msg.Sender = username
         msg.Time = time.Now()
+        msg.Target = friend
 
-        // Отправляем сообщение другу
         if friendConn, ok := clients[friend]; ok {
             err = friendConn.WriteJSON(msg)
             if err != nil {
